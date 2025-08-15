@@ -1,5 +1,5 @@
 import { BadRequestError, NotFoundError, UnauthorizedError } from "./errors.js";
-import { createChirps, getChirpByID, getChirps } from "../db/queries/chirps.js";
+import { createChirps, getChirp, getChirps } from "../db/queries/chirps.js";
 export async function handleChirpCreate(req, res) {
     const params = req.body;
     const body = params.body;
@@ -35,9 +35,9 @@ export async function handleGetChirps(_, res) {
 }
 export async function handleGetChirpsByID(req, res) {
     const chirpID = req.params.chirpID;
-    const chirp = await getChirpByID(chirpID);
+    const chirp = await getChirp(chirpID);
     if (!chirp) {
-        throw new NotFoundError("Chirp not found");
+        throw new NotFoundError(`Chirp with chirpID: ${chirpID} doesn't exist`);
     }
     res.status(200).json(chirp);
 }

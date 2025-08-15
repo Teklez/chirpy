@@ -19,7 +19,7 @@ import {
   handleGetChirps,
   handleGetChirpsByID,
 } from "./api/chirps.js";
-import { handleUserCreate } from "./api/user.js";
+import { handleUserCreate, handleUserLogin } from "./api/user.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -107,6 +107,16 @@ app.get(
   }
 );
 
+app.post(
+  "/api/login",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await handleUserLogin(req, res);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 app.use(middlewareErrorHandler);
 
 app.listen(PORT, () => {

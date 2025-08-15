@@ -10,7 +10,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
 import { handleChirpCreate, handleGetChirps, handleGetChirpsByID, } from "./api/chirps.js";
-import { handleUserCreate } from "./api/user.js";
+import { handleUserCreate, handleUserLogin } from "./api/user.js";
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
 app.use(express.json());
@@ -69,6 +69,14 @@ app.get("/api/chirps", async (req, res, next) => {
 app.get("/api/chirps/:chirpID", async (req, res, next) => {
     try {
         await handleGetChirpsByID(req, res);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+app.post("/api/login", async (req, res, next) => {
+    try {
+        await handleUserLogin(req, res);
     }
     catch (err) {
         next(err);
