@@ -10,6 +10,7 @@ const PORT = 8080;
 import postgres from "postgres";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
+import { handleUserCreate } from "./api/user.js";
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
 app.use(express.json());
@@ -42,6 +43,15 @@ app.post("/admin/reset", async (req, res, next) => {
 app.post("/api/validate_chirp", async (req, res, next) => {
     try {
         await handleVAlidateChirp(req, res);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+// USER APIS
+app.post("/api/users", async (req, res, next) => {
+    try {
+        await handleUserCreate(req, res);
     }
     catch (err) {
         next(err);

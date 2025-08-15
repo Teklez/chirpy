@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { config } from "../config.js";
 import { ForbiddenError } from "./errors.js";
-import { resetUsers } from "src/db/queries/users.js";
+import { resetUsers } from "../db/queries/users.js";
 
 export async function handleReset(_: Request, res: Response) {
   if (config.platform != "dev") {

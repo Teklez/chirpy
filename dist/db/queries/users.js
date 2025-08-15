@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { db } from "../index.js";
 import { users } from "../schema.js";
 export async function createUser(user) {
@@ -7,4 +8,7 @@ export async function createUser(user) {
         .onConflictDoNothing()
         .returning();
     return result;
+}
+export async function resetUsers() {
+    await db.execute(sql.raw("TRUNCATE TABLE users CASCADE;"));
 }

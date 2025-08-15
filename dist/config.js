@@ -8,4 +8,5 @@ export const config = {
         url: process.env.DB_URL || "",
         migrationConfig,
     },
+    platform: process.env.PLATFORM || "",
 };

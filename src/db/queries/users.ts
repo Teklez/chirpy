@@ -12,5 +12,5 @@ export async function createUser(user: NewUser) {
 }
 
 export async function resetUsers() {
-  await db.execute(sql.raw("TRUNCATE TABLE users CASCADE;"));
+  await db.delete(users);
 }

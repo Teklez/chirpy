@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { BadRequestError } from "./errors";
-import { createUser } from "src/db/queries/users";
-import { NewUser } from "src/db/schema";
+import { BadRequestError } from "./errors.js";
+import { createUser } from "../db/queries/users.js";
+import { NewUser } from "../db/schema.js";
 
 export async function handleUserCreate(req: Request, res: Response) {
   const email: string = req.body.email;
@@ -14,7 +14,10 @@ export async function handleUserCreate(req: Request, res: Response) {
   };
 
   const user = await createUser(newUser);
-  if (user) {
-    res.status(201).json(user);
+
+  if (!user) {
+    throw new Error("Could not create user");
   }
+
+  res.status(201).json(user);
 }
