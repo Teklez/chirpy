@@ -1,37 +1,24 @@
 import { Request, Response } from "express";
+import { BadRequestError } from "../errors.js";
 
 export async function handleVAlidateChirp(req: Request, res: Response) {
-  let body = "";
-  req.on("data", (chunk) => {
-    body += chunk;
+  const params = req.body;
+  const profaneWords = ["kerfuffle", "sharbert", "fornax"];
+  const splitted: string[] = params.body.split(" ");
+  const cleaned = splitted.map((item) => {
+    return profaneWords.includes(item.toLowerCase()) ? "****" : item;
   });
 
-  req.on("end", () => {
-    try {
-      const parsedBody = JSON.parse(body);
-      const bod = parsedBody.body;
-      if (bod.length > 140) {
-        res.header("Content-Type", "application/json");
-        res.status(400).send(
-          JSON.stringify({
-            error: "Chirp is too long",
-          })
-        );
-        return;
-      }
-      res.header("Content-Type", "application/json");
+  const joined = cleaned.join(" ");
 
-      res.status(200).send(
-        JSON.stringify({
-          valid: true,
-        })
-      );
-    } catch (error) {
-      res.status(400).send(
-        JSON.stringify({
-          error: "Something went wrong",
-        })
-      );
-    }
-  });
+  if (params.body.length > 140) {
+    throw new BadRequestError("Chirp is too long. Max length is 140");
+  }
+  res.header("Content-Type", "application/json");
+
+  res.status(200).send(
+    JSON.stringify({
+      cleanedBody: joined,
+    })
+  );
 }
