@@ -9,7 +9,8 @@ export async function handleUserCreate(req, res) {
         email,
     };
     const user = await createUser(newUser);
-    if (user) {
-        res.status(201).json(user);
+    if (!user) {
+        throw new Error("Could not create user");
     }
+    res.status(201).json(user);
 }

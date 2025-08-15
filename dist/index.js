@@ -3,13 +3,13 @@ import { handleMetrics } from "./api/metrics.js";
 import { middlewareErrorHandler, middlewareLogResponses, middlewareMetricsInc, } from "./api/middleware.js";
 import { handlerReadiness } from "./api/readiness.js";
 import { handleReset } from "./api/reset.js";
-import { handleVAlidateChirp } from "./api/validate_chirp.js";
 import { config } from "./config.js";
 const app = express();
 const PORT = 8080;
-import postgres from "postgres";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import postgres from "postgres";
+import { handleChirpCreate, handleGetChirps, handleGetChirpsByID, } from "./api/chirps.js";
 import { handleUserCreate } from "./api/user.js";
 const migrationClient = postgres(config.db.url, { max: 1 });
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -40,18 +40,35 @@ app.post("/admin/reset", async (req, res, next) => {
         next(err);
     }
 });
-app.post("/api/validate_chirp", async (req, res, next) => {
+// USER APIS
+app.post("/api/users", async (req, res, next) => {
     try {
-        await handleVAlidateChirp(req, res);
+        await handleUserCreate(req, res);
     }
     catch (err) {
         next(err);
     }
 });
-// USER APIS
-app.post("/api/users", async (req, res, next) => {
+// CHIRPS ENDPOINT
+app.post("/api/chirps", async (req, res, next) => {
     try {
-        await handleUserCreate(req, res);
+        await handleChirpCreate(req, res);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+app.get("/api/chirps", async (req, res, next) => {
+    try {
+        await handleGetChirps(req, res);
+    }
+    catch (err) {
+        next(err);
+    }
+});
+app.get("/api/chirps/:chirpID", async (req, res, next) => {
+    try {
+        await handleGetChirpsByID(req, res);
     }
     catch (err) {
         next(err);

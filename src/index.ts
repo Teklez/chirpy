@@ -1,4 +1,4 @@
-import express, { NextFunction } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { handleMetrics } from "./api/metrics.js";
 import {
   middlewareErrorHandler,
@@ -7,15 +7,18 @@ import {
 } from "./api/middleware.js";
 import { handlerReadiness } from "./api/readiness.js";
 import { handleReset } from "./api/reset.js";
-import { handleVAlidateChirp } from "./api/validate_chirp.js";
-import { Request, Response } from "express";
 import { config } from "./config.js";
 const app = express();
 const PORT = 8080;
 
-import postgres from "postgres";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import postgres from "postgres";
+import {
+  handleChirpCreate,
+  handleGetChirps,
+  handleGetChirpsByID,
+} from "./api/chirps.js";
 import { handleUserCreate } from "./api/user.js";
 
 const migrationClient = postgres(config.db.url, { max: 1 });
@@ -57,17 +60,6 @@ app.post(
   }
 );
 
-app.post(
-  "/api/validate_chirp",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await handleVAlidateChirp(req, res);
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
 // USER APIS
 
 app.post(
@@ -75,6 +67,40 @@ app.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       await handleUserCreate(req, res);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// CHIRPS ENDPOINT
+app.post(
+  "/api/chirps",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await handleChirpCreate(req, res);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.get(
+  "/api/chirps",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await handleGetChirps(req, res);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+app.get(
+  "/api/chirps/:chirpID",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await handleGetChirpsByID(req, res);
     } catch (err) {
       next(err);
     }
