@@ -4,8 +4,14 @@ import { middlewareErrorHandler, middlewareLogResponses, middlewareMetricsInc, }
 import { handlerReadiness } from "./api/readiness.js";
 import { handleReset } from "./api/reset.js";
 import { handleVAlidateChirp } from "./api/validate_chirp.js";
+import { config } from "./config.js";
 const app = express();
 const PORT = 8080;
+import postgres from "postgres";
+import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { drizzle } from "drizzle-orm/postgres-js";
+const migrationClient = postgres(config.db.url, { max: 1 });
+await migrate(drizzle(migrationClient), config.db.migrationConfig);
 app.use(express.json());
 app.use(middlewareLogResponses);
 app.use("/app", middlewareMetricsInc, express.static("./src/app"));

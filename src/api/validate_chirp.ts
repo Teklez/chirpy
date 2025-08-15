@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BadRequestError } from "../errors.js";
+import { BadRequestError } from "./errors.js";
 
 export async function handleVAlidateChirp(req: Request, res: Response) {
   const params = req.body;

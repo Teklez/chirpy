@@ -5,7 +5,8 @@ import {
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,
-} from "../errors.js";
+} from "./errors.js";
+import { error } from "console";
 export function middlewareLogResponses(
   req: Request,
   res: Response,
@@ -38,20 +39,26 @@ export function middlewareErrorHandler(
   res: Response,
   next: NextFunction
 ) {
-  console.error("Something went wrong on our end");
-  let statusCode;
-  const errorMessage = err.message;
+  let statusCode = 500;
+  let errorMessage = "Something went wrong on our end";
   if (err instanceof BadRequestError) {
-    res.status(400);
+    statusCode = 400;
+    errorMessage = err.message;
   } else if (err instanceof UnauthorizedError) {
-    res.status(401);
+    statusCode = 401;
+    errorMessage = err.message;
   } else if (err instanceof ForbiddenError) {
-    res.status(403);
+    statusCode = 403;
+    errorMessage = err.message;
   } else if (err instanceof NotFoundError) {
-    res.status(404);
+    statusCode = 404;
+    errorMessage = err.message;
   }
 
-  res.json({
+  if (statusCode >= 500) {
+    console.log(err.message);
+  }
+  res.status(statusCode).json({
     error: errorMessage,
   });
 }

@@ -1,4 +1,4 @@
-import { BadRequestError } from "../errors.js";
+import { BadRequestError } from "./errors.js";
 export async function handleVAlidateChirp(req, res) {
     const params = req.body;
     const profaneWords = ["kerfuffle", "sharbert", "fornax"];
